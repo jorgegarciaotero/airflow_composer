@@ -29,13 +29,15 @@ By default, Airflow's catchup parameter determines the behavior when a DAG is sc
 - catchup=True (default): The scheduler creates DAG runs for all intervals between the DAG's start_date and the current date, potentially backfilling historical data.
 - catchup=False (your current configuration): The scheduler only creates a DAG run for the current date based on the schedule_interval. It won't backfill historical data automatically.
 
-```With DAG(
+```
+With DAG(
     dag_id="10_user_processing",
     start_date=datetime(2024, 3, 23),
     schedule_interval="@daily",
     catchup=True  # Enable backfilling
 ) as dag:
-    # Your DAG tasks here`````
+    # Your DAG tasks here
+```
 
 
 ## Types of Operators:
