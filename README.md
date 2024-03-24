@@ -3,73 +3,62 @@
 Note: To be able to work with these examples, install docker desktop, create the .env variable and then open Docker Desktop and execute "docker-compose up -d"
 
 ## Core Components:
-
 - **Web server:** Provides a user interface for Airflow. It allows users to monitor DAGs and task statuses, trigger DAG runs manually, view logs and code for tasks and manage users and connections.
-
 - **Scheduler:** It is responsible for periodically scanning DAG definitions, identifying DAGs that are ready to run based on their schedule intervals or dependencies and triggering the execution of tasks within those DAGs by sending them to the executor.
-
 - **Metastore:** Acts as a central repository that stores information about Airflow's workflows. This includes details like DAG definitions (tasks, dependencies, configurations), DAG run details (start/end times, task statuses, logs), Variable values and connections or Information about users and their roles.
 
 - **Triggerer:**  In some Airflow versions, the triggerer acts as a separate component responsible for monitoring external events or signals and triggering DAG runs based on these external events (e.g., file arrival, sensor completion).
-
 - **Executor:** The executor receives tasks from the scheduler and is responsible for Selecting a worker to run the task, Submitting the task to the worker for execution and Monitoring the task's execution and reporting its status back to the scheduler.
-
 - **Queue:** An optional queue can be used as a buffer between the scheduler and the executor. Tasks are placed in the queue by the scheduler. Workers pull tasks from the queue for execution. This can be helpful for managing load and ensuring worker availability.
-
 - **Worker:**  Workers are processes or containers that actually execute the tasks defined in DAGs. They receive tasks from the executor, execute the defined task logic (e.g., python functions, shell commands) and report the task's completion status (success, failure) back to the executor.
 
 ## Core Concepts:
-
 - **DAG (Directed Acyclic Graph):** It is the fundamental unit of work in Airflow. It represents a directed workflow made up of tasks with well-defined dependencies.defines the overall orchestration of your data pipelines or workflows.
-
 - **Operator:** Defines a specific action to be performed within a DAG. It provides the building blocks for your workflows. Airflow comes with a rich set of built-in operators for various tasks like:
-
 - **Workflow:**   It refers to the complete process defined within a DAG, including the execution of tasks, their dependencies, and the overall flow of data or actions.
 
 
 ## DAG Scheduling:
-
 - **start_date**: The timestamp from which the scheduler will attempt to backfill
-  
 - **schedule_interval**: How often a DAG runs
-  
 - **end_date**: The timestamp from which a DAG ends
+
+## Backfilling: 
+Backfilling in Airflow refers to the process of running a DAG (Directed Acyclic Graph) for a specific historical period in the past. This allows you to populate your data pipelines with historical data and ensure they are complete
+By default, Airflow's catchup parameter determines the behavior when a DAG is scheduled to run daily but hasn't been executed for a while:
+- catchup=True (default): The scheduler creates DAG runs for all intervals between the DAG's start_date and the current date, potentially backfilling historical data.
+- catchup=False (your current configuration): The scheduler only creates a DAG run for the current date based on the schedule_interval. It won't backfill historical data automatically.
+
+```With DAG(
+    dag_id="10_user_processing",
+    start_date=datetime(2024, 3, 23),
+    schedule_interval="@daily",
+    catchup=True  # Enable backfilling
+) as dag:
+    # Your DAG tasks here
 
 
 ## Types of Operators:
 - **Action Operators:** Execute an action.
-  
 - **Transfer Operators:** Transfer data.
-  
 - **Sensors:** Wait for a condition to be met.
 
 ## Providers
-
 Providers are essentially plugins that extend its capabilities. They allow Airflow to interact with various external services, data sources, and systems.
-
 #### Functionality:
-
 - **Connection Types:** Providers introduce new connection types for connecting Airflow to external services. These connections store credentials and other details needed for communication.
-  
 - **Operators:** Providers offer new operators specifically designed to interact with the external service. These operators handle tasks like data transfer, triggering actions, or monitoring the service.
-  
 - **Hooks:** Providers might also include hooks that provide lower-level access to the service's functionalities.
-  
-- **Sensors:** Some providers offer sensors that allow Airflow to wait for specific conditions within the external service before proceeding with downstream tasks
-  
+- **Sensors:** Some providers offer sensors that allow Airflow to wait for specific conditions within the external service before proceeding with downstream tasks.
 
 #### Benefits of Providers:
-
 - **Modular Design:** Providers allow for a modular Airflow installation. You can install only the providers you need for your specific use cases.
-  
 - **Extensibility:** The provider ecosystem allows Airflow to integrate with a wide range of technologies.
-  
 - **Community-Driven:** Many providers are developed and maintained by the Airflow community, offering a vast selection of integrations.
 
 #### Types of Providers:
 
 - **Officially Supported Providers:** These are providers maintained by the Apache Airflow project itself. They cover popular services like Amazon S3, Google Cloud Storage, MySQL, and many more.
-  
 - **Community-Developed Providers:** A large number of providers are developed and maintained by the Airflow community. You can find them on platforms like PyPI (Python Package Index).
 
 #### Install Providers: 
