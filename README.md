@@ -24,30 +24,52 @@ Note: To be able to work with these examples, install docker desktop, create the
 
 - **Operator:** Defines a specific action to be performed within a DAG. It provides the building blocks for your workflows. Airflow comes with a rich set of built-in operators for various tasks like:
 
-- **Workflow: **   It refers to the complete process defined within a DAG, including the execution of tasks, their dependencies, and the overall flow of data or actions.
+- **Workflow:**   It refers to the complete process defined within a DAG, including the execution of tasks, their dependencies, and the overall flow of data or actions.
+
+
+## DAG Scheduling:
+
+- **start_date**: The timestamp from which the scheduler will attempt to backfill
+  
+- **schedule_interval**: How often a DAG runs
+  
+- **end_date**: The timestamp from which a DAG ends
 
 
 ## Types of Operators:
 - **Action Operators:** Execute an action.
+  
 - **Transfer Operators:** Transfer data.
+  
 - **Sensors:** Wait for a condition to be met.
 
 ## Providers
+
 Providers are essentially plugins that extend its capabilities. They allow Airflow to interact with various external services, data sources, and systems.
+
 #### Functionality:
+
 - **Connection Types:** Providers introduce new connection types for connecting Airflow to external services. These connections store credentials and other details needed for communication.
+  
 - **Operators:** Providers offer new operators specifically designed to interact with the external service. These operators handle tasks like data transfer, triggering actions, or monitoring the service.
+  
 - **Hooks:** Providers might also include hooks that provide lower-level access to the service's functionalities.
-- **Sensors:** Some providers offer sensors that allow Airflow to wait for specific conditions within the external service before proceeding with downstream tasks.
+  
+- **Sensors:** Some providers offer sensors that allow Airflow to wait for specific conditions within the external service before proceeding with downstream tasks
+  
 
 #### Benefits of Providers:
+
 - **Modular Design:** Providers allow for a modular Airflow installation. You can install only the providers you need for your specific use cases.
+  
 - **Extensibility:** The provider ecosystem allows Airflow to integrate with a wide range of technologies.
+  
 - **Community-Driven:** Many providers are developed and maintained by the Airflow community, offering a vast selection of integrations.
 
 #### Types of Providers:
 
 - **Officially Supported Providers:** These are providers maintained by the Apache Airflow project itself. They cover popular services like Amazon S3, Google Cloud Storage, MySQL, and many more.
+  
 - **Community-Developed Providers:** A large number of providers are developed and maintained by the Airflow community. You can find them on platforms like PyPI (Python Package Index).
 
 #### Install Providers: 
@@ -89,10 +111,13 @@ Interfaces that provide a standardized way to interact with external platforms a
 
 ## Test a Task:
 - docker-compose ps:
+  
 PS C:\proyectos\airflow> docker-compose ps
 
-- docker exec -it <name_scheduler> /bin/bash
+- docker exec -it <name_scheduler> /bin/bash:
+
 PS C:\proyectos\airflow> docker exec -it airflow-airflow-scheduler-1 /bin/bash
 
 - Use airflow tasks test <dag_id> <task_id> to test a task:
+
 airflow@26482d3211ad:/opt/airflow$ airflow tasks test 01_basic_dag test_python
