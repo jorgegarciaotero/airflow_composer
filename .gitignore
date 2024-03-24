@@ -2,3 +2,4 @@ config.yaml
 #Airflow folders
 logs
 plugins
+.env

@@ -1,32 +1,22 @@
 from builtins import range
 from datetime import timedelta,datetime
 import yaml
+import os
 from airflow.models import DAG
 from airflow.operators.bash_operator import BashOperator
 from airflow.operators.python_operator import PythonOperator
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.utils.dates import days_ago
-
-
 # Load email from config.yaml
-with open("config.yaml", "r") as stream:
-    '''
-    In Composer Environment Variables, set  a new value - key with your email config.
-    AIRFLOW_CONFIG = gs://my-bucket/config.yaml
-    '''
-    try:
-        config = yaml.safe_load(stream)
-        email = config.get("email")
-    except yaml.YAMLError as exc:
-        raise Exception(f"Error loading config.yaml: {exc}")
-    
-    
+
+ 
+
 default_args = {
     'owner':'Airflow',                             #User who owns the DAG
     'start_date': datetime(2024,3,24, 10,50,00),   #date and time when the task should be scheduled to run for the first time.
     'catchup' : False,                             #Controls backfilling behavior. When set to False (default in your example), Airflow will only schedule the task for future execution dates, not past dates.
     'depends_on_past': False,                      #Determines if the task depends on the successful completion of its upstream tasks. Set to False in your example, indicating it doesn't rely on past runs.
-    'email': email ,                               #A list of email addresses to notify in case of task failures. Your example includes a single address
+    'email': 'email@example.com' ,                 #A list of email addresses to notify in case of task failures. Your example includes a single address
     'email_on_failure': True,
     'email_on_retry': True,
     'retries': 1,                                  #Defines the number of times a task should be retried before failing. In your case, it allows for one retry.
@@ -49,6 +39,7 @@ default_args = {
 def helloWorldLoop():
     for word in ['hello','world']:
         print(word)
+     
 
 with DAG(dag_id='01_basic_dag',
     default_args=default_args,
