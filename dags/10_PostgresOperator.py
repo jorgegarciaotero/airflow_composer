@@ -65,3 +65,6 @@ with DAG(
         python_callable=_process_user,
         op_args=[]
         )
+    
+    extract_user >> process_user 
+    

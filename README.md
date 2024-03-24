@@ -56,20 +56,40 @@ Providers are essentially plugins that extend its capabilities. They allow Airfl
 - Use Operators and Connections: Utilize the operators and connection definitions within your DAGs to interact with the external service.
 
 
+## Hooks:
+Interfaces that provide a standardized way to interact with external platforms and services. They act as building blocks for operators, which define the actual tasks within your DAGs (Directed Acyclic Graphs). Here's a breakdown of their key aspects:
+#### Functionality:
+- **Abstraction:** Hooks encapsulate the complexities of interacting with different external APIs, hiding the low-level details and offering a consistent interface for your DAG code.
+- **Connection Management:** Hooks handle retrieving connection details from Airflow's connection store, simplifying access to credentials and configuration for external systems.
+- **Error Handling:** Hooks can implement custom error handling mechanisms, making your DAGs more robust and easier to maintain.
+
+#### Common Airflow Hooks:
+- **Database Hooks:** Interact with various databases like MySQL, PostgreSQL, and SQLite.
+- **Cloud Provider Hooks:** Access services offered by cloud platforms like AWS, GCP, and Azure.
+- **File System Hooks:** Interact with local and remote file systems.
+- **Web Service Hooks:** Communicate with HTTP APIs provided by external services.
+- **Email Hooks:** Send email notifications.
 
 
-#### Test a Task:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Test a Task:
 - docker-compose ps:
 PS C:\proyectos\airflow> docker-compose ps
-time="2024-03-24T16:14:40+01:00" level=warning msg="The \"AIRFLOW_UID\" variable is not set. Defaulting to a blank string."
-time="2024-03-24T16:14:40+01:00" level=warning msg="The \"AIRFLOW_UID\" variable is not set. Defaulting to a blank string."
-NAME                          IMAGE                  COMMAND                  SERVICE             CREATED          STATUS                   PORTS
-airflow-airflow-scheduler-1   apache/airflow:2.4.2   "/usr/bin/dumb-init …"   airflow-scheduler   45 minutes ago   Up 6 minutes (healthy)   8080/tcp
-airflow-airflow-triggerer-1   apache/airflow:2.4.2   "/usr/bin/dumb-init …"   airflow-triggerer   45 minutes ago   Up 6 minutes (healthy)   8080/tcp
-airflow-airflow-webserver-1   apache/airflow:2.4.2   "/usr/bin/dumb-init …"   airflow-webserver   45 minutes ago   Up 6 minutes (healthy)   0.0.0.0:8080->8080/tcp
-airflow-airflow-worker-1      apache/airflow:2.4.2   "/usr/bin/dumb-init …"   airflow-worker      45 minutes ago   Up 6 minutes (healthy)   8080/tcp
-airflow-postgres-1            postgres:13            "docker-entrypoint.s…"   postgres            45 minutes ago   Up 6 minutes (healthy)   5432/tcp
-airflow-redis-1               redis:latest           "docker-entrypoint.s…"   redis               45 minutes ago   Up 6 minutes (healthy)   6379/tcp
 
 - docker exec -it <name_scheduler> /bin/bash
 PS C:\proyectos\airflow> docker exec -it airflow-airflow-scheduler-1 /bin/bash
