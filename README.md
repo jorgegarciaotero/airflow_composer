@@ -20,7 +20,7 @@ Note: To be able to work with these examples, install docker desktop, create the
 
 ## DAG Scheduling:
 - **start_date**: The timestamp from which the scheduler will attempt to backfill
-- **schedule_interval**: How often a DAG runs
+- **schedule_interval**: How often a DAG runs. Since Airflow 2.4 you use with DAG(Schedule=...) instead.
 - **end_date**: The timestamp from which a DAG ends
 
 ## Backfilling: 
@@ -38,7 +38,6 @@ With DAG(
 ) as dag:
     # Your DAG tasks here
 ```
-
 
 ## Types of Operators:
 - **Action Operators:** Execute an action.
@@ -84,7 +83,18 @@ Interfaces that provide a standardized way to interact with external platforms a
 - **Email Hooks:** Send email notifications.
 
 
-
+## Datasets: 
+Logical representation of a group of related data. It acts as a placeholder for data that might be located in various storage systems like files, databases, or cloud object stores. Here's a breakdown of the concept:
+#### Purpose:
+- **Dependency Management:** Datasets help define data dependencies between different DAGs (Directed Acyclic Graphs).
+- **Scheduling:** They enable data-aware scheduling, where a DAG can be triggered only when its dependent datasets are updated.
+- **Abstraction:** Datasets hide the underlying storage details, simplifying DAG code and improving maintainability.
+#### How Datasets Work:
+- **Defining Datasets:** You define a dataset using the Dataset class from Airflow, providing a URI (Uniform Resource Identifier) that specifies the location of the data.
+- **Marking Producers and Consumers:**  Tasks that create data (producers) can mark their output as a dataset using the outlet parameter. Similarly, tasks that consume data (consumers) can specify their dependencies on datasets using the schedule_interval parameter set to the dataset itself.
+- **Airflow Monitoring:** Airflow monitors the state of datasets.
+    - For producer tasks, Airflow updates the dataset metadata when the task finishes successfully.
+    - For consumer tasks, Airflow waits until the dependent datasets are updated before triggering the scheduled run.
 
 
 
