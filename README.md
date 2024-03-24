@@ -67,7 +67,6 @@ Providers are essentially plugins that extend its capabilities. They allow Airfl
 - Import Operators and Hooks: Import the operators and hooks you need from the provider package in your DAGs.
 - Use Operators and Connections: Utilize the operators and connection definitions within your DAGs to interact with the external service.
 
-
 ## Hooks:
 Interfaces that provide a standardized way to interact with external platforms and services. They act as building blocks for operators, which define the actual tasks within your DAGs (Directed Acyclic Graphs). Here's a breakdown of their key aspects:
 #### Functionality:
@@ -97,7 +96,22 @@ Logical representation of a group of related data. It acts as a placeholder for 
     - For consumer tasks, Airflow waits until the dependent datasets are updated before triggering the scheduled run.
 
 
+## Executors:
+Executors are the workhorses responsible for running the tasks defined within your DAGs (Directed Acyclic Graphs). They act as a bridge between the Airflow scheduler and the worker processes that execute the actual tasks. Here's a detailed breakdown of their role:
 
+#### Functionality:
+- **Task Execution:** Executors receive instructions from the Airflow scheduler about which tasks need to be run.
+- **Resource Management:** They allocate resources (like CPU, memory) to worker processes for task execution.
+- **Monitoring:** Executors track the status of running tasks (running, succeeded, failed) and report them back to the Airflow scheduler.
+- **Scalability:** Airflow allows you to configure multiple executors to distribute task execution across different worker machines, achieving parallelism and improved performance.
+
+#### Types of Executors:
+- **Local Executor (Default):** Runs tasks in the same process as the Airflow scheduler. Suitable for small-scale deployments or development environments.
+- **Sequential Executor:** Runs tasks sequentially on the same machine as the scheduler. More deterministic but less efficient for parallel processing.
+- **Remote Executors:** Orchestrate task execution on separate worker machines. Available options include:
+- **Celery Executor:** Leverages Celery, a distributed task queue system, for asynchronous task execution.
+- **Kubernetes Executor:** Utilizes Kubernetes clusters for scaling task execution across multiple pods.
+- **Dask Executor:** Employs Dask, a parallel computing framework, for distributed task execution.
 
 
 
