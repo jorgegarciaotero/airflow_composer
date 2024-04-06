@@ -136,3 +136,9 @@ PS C:\proyectos\airflow> docker exec -it airflow-airflow-scheduler-1 /bin/bash
 - Use airflow tasks test <dag_id> <task_id> to test a task:
 
 airflow@26482d3211ad:/opt/airflow$ airflow tasks test 01_basic_dag test_python
+
+
+
+## GCP Packages installation:
+
+pip install apache-airflow-providers-google
