@@ -1,22 +1,20 @@
 from builtins import range
 from datetime import timedelta,datetime
 import pandas as pd
-import yaml
-import os
 from airflow.models import DAG
-from airflow.operators.bash_operator import BashOperator
-from airflow.operators.python_operator import PythonOperator
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.utils.dates import days_ago
-# Load email from config.yaml
 from airflow.providers.google.cloud.transfers.local_to_gcs import LocalFilesystemToGCSOperator
-from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQueryOperator
 from airflow.providers.google.cloud.transfers.gcs_to_local import GCSToLocalFilesystemOperator
-from airflow.providers.google.cloud.operators.bigquery import (
-    BigQueryCreateEmptyDatasetOperator,
-    BigQueryExecuteQueryOperator
-)
-#from airflow.models.variable import Variable
+
+
+'''
+Examples of Operators to interact between local filesystem and Cloud Storage
+    gcp_connection_2:  In Airflow, Admin --> Connections 
+        - conn id: gcp_connection_2
+        - conn type: google_cloud_platform
+        - Keyfile JSON: Service Account's JSON	
+'''
 
 
 default_args = {
@@ -35,18 +33,16 @@ with DAG(dag_id='15_gcs_local',
         task_id="local_to_gcs",
         gcp_conn_id="gcp_connection_2",
         src="/opt/airflow/airflow.cfg", #mi fichero  dentro del docket de airflow
-        #src="/Users/jorgegarciaotero/Documents/airflow_composer/README.md",
         dst="airflow.cfg",
         bucket="airflow_sdbox_j", #gc:// does not work
     )
 
-    # Task to download data from GCS
     gcs_to_local = GCSToLocalFilesystemOperator(
         task_id="gcs_to_local",
         gcp_conn_id="gcp_connection_2",
         bucket="airflow_sdbox_j",
         object_name="file.json",  # Specify the actual file name
-        filename="file.json"  # Local filename to save to (can be different)
+        filename="file.json"      # Local filename to save to (can be different)
     )
 
 local_to_gcs >> gcs_to_local

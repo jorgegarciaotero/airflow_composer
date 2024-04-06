@@ -37,8 +37,22 @@ from airflow.providers.google.cloud.operators.bigquery import (
 )
 from airflow.utils.dates import days_ago
 
-PROJECT_ID = os.environ.get("GCP_PROJECT_ID", "example-project")
-DATASET_NAME = os.environ.get("GCP_BIGQUERY_DATASET_NAME", "test_dataset")
+'''
+
+    gcp_connection_2:  In Airflow, Admin --> Connections 
+        - conn id: gcp_connection_2
+        - conn type: google_cloud_platform
+        - Keyfile JSON: Service Account's JSON	
+'''
+
+
+
+
+DATASET_NAME = os.environ.get("GCP_DATASET_NAME", 'dataset_example')
+TABLE_NAME = os.environ.get("GCP_TABLE_NAME", 'table_example')
+PROJECT_NAME = os.environ.get("GCP_PROJECT_NAME", 'project_name')
+BUCKET_NAME = os.environ.get("GCP_BUCKET_NAME",'bucket_name')
+CONNECTION_ID = os.environ.get("CONNECTION_ID_VARIABLE",'gcp_connection_2')
 LOCATION = "southamerica-east1"
 
 TABLE_1 = "table1"

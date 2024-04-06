@@ -33,9 +33,20 @@ from airflow.providers.google.cloud.transfers.gcs_to_bigquery import(
 )
 
 
+'''
+
+    gcp_connection_2:  In Airflow, Admin --> Connections 
+        - conn id: gcp_connection_2
+        - conn type: google_cloud_platform
+        - Keyfile JSON: Service Account's JSON	
+'''
+
+
 DATASET_NAME = os.environ.get("GCP_DATASET_NAME", 'test_dataset_2')
 TABLE_NAME = os.environ.get("GCP_TABLE_NAME", 'demos1')
-
+PROJECT_NAME = os.environ.get("GCP_PROJECT_NAME", 'jorgegotero')
+BUCKET_NAME = os.environ.get("GCP_BUCKET_NAME",'airflow_sdbox_j')
+CONNECTION_ID = os.environ.get("CONNECTION_ID_VARIABLE",'gcp_connection_2')
 
 
 default_args = {
@@ -54,7 +65,7 @@ with DAG(dag_id='17_bq_to_cs',
     #https://airflow.apache.org/docs/apache-airflow-providers-google/stable/_api/airflow/providers/google/cloud/operators/bigquery/index.html#airflow.providers.google.cloud.operators.bigquery.BigQueryExecuteQueryOperator
     query_bq_data = BigQueryExecuteQueryOperator(
         task_id="query_bq_data",
-        gcp_conn_id="gcp_connection_2",  
+        gcp_conn_id=f"{CONNECTION_ID}",
         sql="SELECT *  FROM `bigquery-public-data.google_trends.top_terms`",
         use_legacy_sql=False, 
     )
@@ -62,20 +73,20 @@ with DAG(dag_id='17_bq_to_cs',
     #https://airflow.apache.org/docs/apache-airflow-providers-google/stable/_api/airflow/providers/google/cloud/transfers/bigquery_to_gcs/index.html#module-airflow.providers.google.cloud.transfers.bigquery_to_gcs
     bq_to_gcs_task = BigQueryToGCSOperator(
         task_id="bq_to_gcs_task",
-        project_id ="jorgegotero",
-        gcp_conn_id="gcp_connection_2",  
+        project_id=f"{PROJECT_NAME}",
+        gcp_conn_id=f"{CONNECTION_ID}", 
         source_project_dataset_table="jrjames83-1171.sampledata.stock_prices",
-        destination_cloud_storage_uris=["gs://airflow_sdbox_j/file.csv"],  # List of GCS URIs
+        destination_cloud_storage_uris=[f"gs://{BUCKET_NAME}/file.csv"],  # List of GCS URIs
         field_delimiter=';',
     )
     
     #https://airflow.apache.org/docs/apache-airflow-providers-google/stable/_api/airflow/providers/google/cloud/transfers/gcs_to_bigquery/index.html#airflow.providers.google.cloud.transfers.gcs_to_bigquery.GCSToBigQueryOperator
     gcs_to_bq_task = GCSToBigQueryOperator(
         task_id="gcs_to_bq_task",
-        gcp_conn_id="gcp_connection_2", 
-        bucket="airflow_sdbox_j",
+        gcp_conn_id=f"{CONNECTION_ID}",
+        bucket=f"{BUCKET_NAME}",
         source_objects ="file.csv", #URI path
-        destination_project_dataset_table="jorgegotero.test_dataset_2.demos",
+        destination_project_dataset_table=f"{PROJECT_NAME}.{DATASET_NAME}.{TABLE_NAME}",
         write_disposition="WRITE_TRUNCATE",
         schema_fields=[
         {'name': 'Date', 'type': 'TIMESTAMP', 'mode': 'NULLABLE'},
