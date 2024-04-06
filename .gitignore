@@ -3,3 +3,5 @@ config.yaml
 logs
 plugins
 .env
+*.pyc
+dags/__pycache__
