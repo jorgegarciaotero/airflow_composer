@@ -44,7 +44,7 @@ from airflow.providers.google.cloud.transfers.gcs_to_bigquery import(
 
 DATASET_NAME = os.environ.get("GCP_DATASET_NAME", 'test_dataset_2')
 TABLE_NAME = os.environ.get("GCP_TABLE_NAME", 'demos1')
-PROJECT_NAME = os.environ.get("GCP_PROJECT_NAME", 'jorgegotero')
+PROJECT_NAME = os.environ.get("GCP_PROJECT_NAME", 'project_name')
 BUCKET_NAME = os.environ.get("GCP_BUCKET_NAME",'airflow_sdbox_j')
 CONNECTION_ID = os.environ.get("CONNECTION_ID_VARIABLE",'gcp_connection_2')
 

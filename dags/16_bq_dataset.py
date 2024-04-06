@@ -30,7 +30,7 @@ gcp_connection_2:  In Airflow, Admin --> Connections
 
 DATASET_NAME = os.environ.get("GCP_DATASET_NAME", 'dataset_example')
 TABLE_NAME = os.environ.get("GCP_TABLE_NAME", 'table_example')
-PROJECT_NAME = os.environ.get("GCP_PROJECT_NAME", 'jorgegotero')
+PROJECT_NAME = os.environ.get("GCP_PROJECT_NAME", 'project_name')
 BUCKET_NAME = os.environ.get("GCP_BUCKET_NAME",'airflow_sdbox_j')
 CONNECTION_ID = os.environ.get("CONNECTION_ID_VARIABLE",'gcp_connection_2')
 
