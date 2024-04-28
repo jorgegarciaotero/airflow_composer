@@ -32,9 +32,9 @@ with DAG(dag_id='15_gcs_local',
     local_to_gcs = LocalFilesystemToGCSOperator(
         task_id="local_to_gcs",
         gcp_conn_id="gcp_connection_2",
-        src="/opt/airflow/airflow.cfg", #mi fichero  dentro del docket de airflow
+        src="/opt/airflow/airflow.cfg", #my file inside airflow docker container
         dst="airflow.cfg",
-        bucket="airflow_sdbox_j", #gc:// does not work
+        bucket="airflow_sdbox_j", #gc:// does not work. airflow_sdbox_j is the bucket's name.
     )
 
     gcs_to_local = GCSToLocalFilesystemOperator(

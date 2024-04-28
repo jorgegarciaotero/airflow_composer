@@ -1,0 +1,51 @@
+[
+    {
+      "name": "country_name",
+      "type": "STRING",
+      "mode": "NULLABLE",
+      "description": "name of the country"
+    },
+    {
+      "name": "geo_id",
+      "type": "STRING",
+      "mode": "NULLABLE",
+      "description": "geographical id"
+    },
+    {
+      "name": "population",
+      "type": "FLOAT",
+      "mode": "NULLABLE",
+      "defaultValueExpression": "0.0",
+      "description": "total population for a given date"
+    },
+    {
+      "name": "longitude_centroid",
+      "type": "FLOAT",
+      "mode": "NULLABLE",
+      "description": "latitude decimal"
+    },
+    {
+      "name": "latitude_centroid",
+      "type": "FLOAT",
+      "mode": "NULLABLE",
+      "description": "longitude decimal"
+    },
+    {
+      "name": "alpha_3_code",
+      "type": "STRING",
+      "mode": "NULLABLE",
+      "description": "country code"
+    },
+    {
+      "name": "geog",
+      "type": "GEOGRAPHY",
+      "mode": "NULLABLE",
+      "description": "polygon coordinates"
+    },
+    {
+      "name": "last_updated",
+      "type": "DATE",
+      "mode": "NULLABLE",
+      "description": "last_update"
+    }
+]
