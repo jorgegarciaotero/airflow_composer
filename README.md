@@ -122,7 +122,8 @@ Executors are the workhorses responsible for running the tasks defined within yo
 
 
 
-
+## Execute docker-compose:
+docker-compose up -d
 
 ## Test a Task:
 - docker-compose ps:
