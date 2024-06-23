@@ -42,9 +42,27 @@ def print_variables():
         print(f"Failed to decode JSON: {e}")
 
 
+def get_request_params():
+    '''
+    Makes the first request to the API
+    returns the params, a json dictionary with the parameters to make the request
+    '''
+    connection = BaseHook.get_connection('google_places_api')
+    api_key = connection.extra_dejson.get('api_key')
+    place_to_search_dict = json.loads(PLACE_TO_SEARCH)
+    params = {
+        "location": place_to_search_dict["location"],
+        "radius": place_to_search_dict["radius"],
+        "keyword": place_to_search_dict["keyword"],
+        "key": api_key
+    }
+    return params
+
+
+
 def find_places_from_location():
     '''
-    Returns the url to make the request to the API
+    Returns the url to make the request to the API later
     '''
     print("VARIABLE NAME: ",PLACE_TO_SEARCH)
     params = get_request_params()
@@ -64,22 +82,32 @@ def fetch_places(params):
     response = requests.get(base_url, params=params)
     return response.json()
 
+
+
+
 def process_response_places(ti, **kwargs):
     """
-    Process the response from the API
+    Pulls the first json of data from google_places_request
+    
     args:
         ti: task instance
         **kwargs: kwargs
     """
     connection = BaseHook.get_connection('google_places_api')
     api_key = connection.extra_dejson.get('api_key')
-    response = ti.xcom_pull(task_ids='google_places_request')
+    #get the json of data from task google_places_request
+    response = ti.xcom_pull(task_ids='google_places_request')  
     data = json.loads(response)
+    #Creates an array of places
     all_places = data.get('results', [])
+    #Gets from data the next_page_token to request more data if exists
     next_page_token = data.get('next_page_token')
     place_to_search_dict = json.loads(PLACE_TO_SEARCH)
+        
+        
     while next_page_token:
-        time.sleep(2)  # Tiempo de espera requerido entre solicitudes
+        #while more tokens exists, there is more data
+        time.sleep(2)  
         params = {
             "location": place_to_search_dict["location"],
             "radius": place_to_search_dict["radius"],
@@ -103,13 +131,12 @@ def process_response_places(ti, **kwargs):
                 "lat": place['geometry']['location']['lat'],
                 "lng": place['geometry']['location']['lng'],
                 "types": place.get('types'),
-                "user_ratings_total": place.get('user_ratings_total')
+                "user_ratings_total": place.get('user_ratings_total'),
+                "last_update": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             }
             f.write(json.dumps(json_record) + '\n')
-
     gcs_hook = GCSHook(gcp_conn_id=CONNECTION_ID)
     gcs_hook.upload(bucket_name=BUCKET_NAME, object_name="places_data.json", filename=file_path)
-
     ti.xcom_push(key="places_dataframe", value=all_places)
 
 def print_xcom_value(ti, **kwargs):
@@ -123,17 +150,10 @@ def print_xcom_value(ti, **kwargs):
     for place in places_data:
         print(place)
 
-def get_request_params():
-    connection = BaseHook.get_connection('google_places_api')
-    api_key = connection.extra_dejson.get('api_key')
-    place_to_search_dict = json.loads(PLACE_TO_SEARCH)
-    params = {
-        "location": place_to_search_dict["location"],
-        "radius": place_to_search_dict["radius"],
-        "keyword": place_to_search_dict["keyword"],
-        "key": api_key
-    }
-    return params
+
+
+
+
 
 default_args = {
     'owner': 'airflow',
@@ -152,6 +172,7 @@ with DAG(dag_id='23_google_places_nearbysearch_',
         python_callable=print_variables
     )
 
+    #Creates the URL to get the first httpresponse. Get the first json of data. This data is sent to the next task
     google_places_request = SimpleHttpOperator(
         task_id='google_places_request',
         method='GET',
@@ -182,60 +203,103 @@ with DAG(dag_id='23_google_places_nearbysearch_',
         destination_project_dataset_table=f"{PROJECT_NAME}.{DATASET_NAME}.{TABLE_NAME}",
         write_disposition="WRITE_TRUNCATE",
         source_format="NEWLINE_DELIMITED_JSON",
-        schema_fields=[
-            {
-                "name": "name",
-                "type": "STRING",
-                "mode": "REQUIRED"
-            },
-            {
-                "name": "opening_hours",
-                "type": "RECORD",
-                "mode": "NULLABLE",
-                "fields": [
-                    {
-                        "name": "open_now",
-                        "type": "BOOLEAN",
-                        "mode": "NULLABLE"
-                    }
-                ]
-            },
-            {
-                "name": "price_level",
-                "type": "FLOAT",
-                "mode": "NULLABLE"
-            },
-            {
-                "name": "address",
-                "type": "STRING",
-                "mode": "NULLABLE"
-            },
-            {
-                "name": "rating",
-                "type": "FLOAT",
-                "mode": "NULLABLE"
-            },
-            {
-                "name": "lat",
-                "type": "FLOAT",
-                "mode": "NULLABLE"
-            },
-            {
-                "name": "lng",
-                "type": "FLOAT",
-                "mode": "NULLABLE"
-            },
-            {
-                "name": "types",
-                "type": "STRING",
-                "mode": "REPEATED"
-            },
-            {
-                "name": "user_ratings_total",
-                "type": "INTEGER",
-                "mode": "NULLABLE"
-            }
-        ],
+        schema_fields = [
+                {
+                    "name": "name",
+                    "type": "STRING",
+                    "mode": "REQUIRED"
+                },
+                {
+                    "name": "opening_hours",
+                    "type": "RECORD",
+                    "mode": "NULLABLE",
+                    "fields": [
+                        {
+                            "name": "open_now",
+                            "type": "BOOLEAN",
+                            "mode": "NULLABLE"
+                        }
+                    ]
+                },
+                {
+                    "name": "price_level",
+                    "type": "FLOAT",
+                    "mode": "NULLABLE"
+                },
+                {
+                    "name": "address",
+                    "type": "STRING",
+                    "mode": "NULLABLE"
+                },
+                {
+                    "name": "rating",
+                    "type": "FLOAT",
+                    "mode": "NULLABLE"
+                },
+                {
+                    "name": "lat",
+                    "type": "FLOAT",
+                    "mode": "NULLABLE"
+                },
+                {
+                    "name": "lng",
+                    "type": "FLOAT",
+                    "mode": "NULLABLE"
+                },
+                {
+                    "name": "types",
+                    "type": "STRING",
+                    "mode": "REPEATED"
+                },
+                {
+                    "name": "user_ratings_total",
+                    "type": "INTEGER",
+                    "mode": "NULLABLE"
+                },
+                {
+                    "name": "place_id",
+                    "type": "STRING",
+                    "mode": "NULLABLE"
+                },
+                {
+                    "name": "photos",
+                    "type": "RECORD",
+                    "mode": "REPEATED",
+                    "fields": [
+                        {
+                            "name": "photo_reference",
+                            "type": "STRING",
+                            "mode": "NULLABLE"
+                        },
+                        {
+                            "name": "width",
+                            "type": "INTEGER",
+                            "mode": "NULLABLE"
+                        },
+                        {
+                            "name": "height",
+                            "type": "INTEGER",
+                            "mode": "NULLABLE"
+                        },
+                        {
+                            "name": "html_attributions",
+                            "type": "STRING",
+                            "mode": "REPEATED"
+                        }
+                    ]
+                },
+                {
+                    "name": "permanently_closed",
+                    "type": "BOOLEAN",
+                    "mode": "NULLABLE"
+                },
+                {
+                    "name": "last_update",
+                    "type": "DATETIME",
+                    "mode": "NULLABLE"
+                }
+            ]
+
     )
 
     print_vars_task >> google_places_request >> process_response_task >> print_xcom_task >> gcs_to_bq_task
